@@ -1,10 +1,26 @@
 package com.instpro.irp.base;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
+import javax.xml.crypto.Data;
+
+import com.sun.org.apache.bcel.internal.Const;
+
 public abstract class BaseService{
+    public static final LocalDateTime SYSTEM_DEFAULT_DATE =
+        LocalDateTime.of(1900, 1, 1, 0, 0, 0);
+     public static final LocalDateTime SYSTEM_MIN_DATE =
+        LocalDateTime.of(1900, 1, 1, 0, 0, 0);
+     public static final LocalDateTime SYSTEM_MAX_DATE =
+        LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+
+    DateTimeFormatter NativeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");// capital h because we expect 24 hour and differentiate between mintutes and months
+    DateTimeFormatter OracleFormat = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
     public static boolean isnull(Object value){
         if (value==null) {
             return true;
@@ -24,7 +40,14 @@ public abstract class BaseService{
             return Array.getLength(value)==0;
         }
         return false;
+    }
+    public static <T> T nvl(T value, T defaultValue) {
+    return value != null ? value : defaultValue;
 }
+
+    public static final String BlankString(){
+        return " ";
+    }
     public  static String NumberToString(int number){
         if(number==0){
         return "zero";
@@ -149,5 +172,23 @@ return "";
     System.out.println(isnull(123));               // false
     System.out.println(isnull(new int[]{}));       // true
     System.out.println(isnull(new int[]{1,2}));    // false
-}    
 }
+public String DateToString(LocalDateTime dtm){
+    if(dtm==null){
+        return SYSTEM_DEFAULT_DATE.format(NativeFormat);
+    }
+    return dtm.format(NativeFormat);
+}  
+public String DateToString(LocalDateTime dtm,DateTimeFormatter f){
+    if(dtm==null){
+        return SYSTEM_DEFAULT_DATE.format(f);
+    }
+    return dtm.format(f);
+}  
+public LocalDateTime StringToDate(String stdm){
+    return LocalDateTime.parse(stdm, NativeFormat); // Parse string to LocalDateTime
+        
+}
+}
+
+
